@@ -7,13 +7,16 @@ import (
 	"net/http"
 )
 
-const (
-	url = "https://pokeapi.co/api/v2/pokemon/"
-)
+//
+//const (
+//	url = "https://pokeapi.co/api/v2/pokemon/"
+//)
 
 func (c *Client) GetPokemonByName(ctx context.Context, pokemonName string) (Pokemon, error) {
-	pokeURL := url + pokemonName
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, pokeURL, nil)
+	req, err := http.NewRequestWithContext(ctx,
+		http.MethodGet,
+		c.apiURL+"/api/v2/pokemon/"+pokemonName,
+		nil)
 	if err != nil {
 		return Pokemon{}, fmt.Errorf("failed to create request: %v", err)
 	}
