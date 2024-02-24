@@ -3,11 +3,12 @@ package client
 import (
 	"context"
 	"fmt"
-	"github.com/stretchr/testify/assert"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/stretchr/testify/assert"
 )
 
 func TestClientCanHitAPI(t *testing.T) {
@@ -82,5 +83,4 @@ func TestHTTPServer(t *testing.T) {
 		assert.Error(t, err)
 		assert.Equal(t, 0, poke.Height)
 	})
-
 }

@@ -7,11 +7,6 @@ import (
 	"net/http"
 )
 
-//
-//const (
-//	url = "https://pokeapi.co/api/v2/pokemon/"
-//)
-
 func (c *Client) GetPokemonByName(ctx context.Context, pokemonName string) (Pokemon, error) {
 	req, err := http.NewRequestWithContext(ctx,
 		http.MethodGet,
@@ -20,7 +15,6 @@ func (c *Client) GetPokemonByName(ctx context.Context, pokemonName string) (Poke
 	if err != nil {
 		return Pokemon{}, fmt.Errorf("failed to create request: %v", err)
 	}
-	//defer req.Body.Close()
 
 	req.Header.Add("Accept", "application/json")
 

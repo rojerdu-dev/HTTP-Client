@@ -7,13 +7,3 @@ type Pokemon struct {
 	Height         int    `json:"height"`
 	Weight         int    `json:"weight"`
 }
-
-/*
-id:35
-name:"clefairy"
-base_experience:113
-height:6
-is_default:true
-order:56
-weight:75
-*/
