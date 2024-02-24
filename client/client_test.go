@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"github.com/stretchr/testify/assert"
 	"net/http"
+	"net/http/httptest"
 	"testing"
 	"time"
 )
@@ -48,4 +49,38 @@ func TestWithHTTPClient(t *testing.T) {
 		)
 		assert.Equal(t, 1*time.Second, c.httpClient.Timeout)
 	})
+}
+
+func TestHTTPServer(t *testing.T) {
+	t.Parallel()
+	t.Run("happy path - able to hit locally running server", func(*testing.T) {
+		ts := httptest.NewServer(
+			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				fmt.Fprintf(w, `{"name":"pikachu", "height":10}`)
+			}),
+		)
+		defer ts.Close()
+		fmt.Println(ts.URL)
+
+		c := NewClient(
+			WithAPIURL(ts.URL),
+		)
+		poke, err := c.GetPokemonByName(context.Background(), "pikachu")
+		assert.NoError(t, err)
+		assert.Equal(t, 10, poke.Height)
+	})
+	t.Run("sad path - able to handle 500 status from API", func(*testing.T) {
+		ts := httptest.NewServer(
+			http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				w.WriteHeader(http.StatusInternalServerError)
+			}))
+		defer ts.Close()
+		c := NewClient(
+			WithAPIURL(ts.URL),
+		)
+		poke, err := c.GetPokemonByName(context.Background(), "pikachu")
+		assert.Error(t, err)
+		assert.Equal(t, 0, poke.Height)
+	})
+
 }
