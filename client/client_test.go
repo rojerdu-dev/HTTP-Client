@@ -26,6 +26,9 @@ func TestClientCanHitAPI(t *testing.T) {
 		c := NewClient()
 		_, err := c.GetPokemonByName(context.Background(), "not-in-existence")
 		assert.Error(t, err)
+		assert.Equal(t, PokemonFetchErr{
+			Message:    "non-200 status code from the API",
+			StatusCode: http.StatusNotFound}, err)
 	})
 }
 

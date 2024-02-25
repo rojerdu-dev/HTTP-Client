@@ -3,7 +3,6 @@ package client
 import (
 	"context"
 	"encoding/json"
-	"fmt"
 	"net/http"
 )
 
@@ -13,7 +12,10 @@ func (c *Client) GetPokemonByName(ctx context.Context, pokemonName string) (Poke
 		c.apiURL+"/api/v2/pokemon/"+pokemonName,
 		nil)
 	if err != nil {
-		return Pokemon{}, fmt.Errorf("failed to create request: %v", err)
+		return Pokemon{}, PokemonFetchErr{
+			Message:    err.Error(),
+			StatusCode: -1,
+		}
 	}
 
 	req.Header.Add("Accept", "application/json")
@@ -25,13 +27,19 @@ func (c *Client) GetPokemonByName(ctx context.Context, pokemonName string) (Poke
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return Pokemon{}, fmt.Errorf("unexpected status code returned from PokeAPI")
+		return Pokemon{}, PokemonFetchErr{
+			Message:    "non-200 status code from the API",
+			StatusCode: resp.StatusCode,
+		}
 	}
 
 	var pokemon Pokemon
 	err = json.NewDecoder(resp.Body).Decode(&pokemon)
 	if err != nil {
-		return Pokemon{}, fmt.Errorf("failed to decode response: %v", err)
+		return Pokemon{}, PokemonFetchErr{
+			Message:    err.Error(),
+			StatusCode: resp.StatusCode,
+		}
 	}
 
 	return pokemon, nil
